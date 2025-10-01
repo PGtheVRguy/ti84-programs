@@ -71,8 +71,15 @@ class Player {
         double grv = 0.5;
         gfx_tilemap_t tm;
 
+    bool colPoint(double _vx, double _vy) {
+        if (*gfx_TilePtr(&tm, x+_vx,y+_vy) != 255) { //replace 255 with a list of tiles that are "transparent"
+            return true;
+        }
+        return false;
+    }
+
     bool isGrounded() {
-        if (*gfx_TilePtr(&tm, x,y+16) != 255) {
+        if (colPoint(0,16)) {
             return true;
         }
         return false;
@@ -85,7 +92,7 @@ class Player {
                 vsp = 5;
             }
 
-
+            //Vertical collisions
             if (isGrounded()) {
                 vsp = 0;
             }
@@ -93,10 +100,20 @@ class Player {
                 y--;
             } while (isGrounded());
 
+            //Horizontal collisions
+            if ((colPoint(17,0) )) { //Collisions on the right
+                hsp = 0;
+                x -= 1;
+            }
+            if (colPoint(-1, 0)) { //Collisions on the left
+                hsp = 0;
+                x += 1;
+            }
+
             x += hsp;
             y += vsp;
 
-            gfx_PrintUInt(vsp, 3);
+            //gfx_PrintUInt(vsp, 3);
 
 
 
