@@ -2,4 +2,6 @@ global_palette.h
 global_palette.c
 tileset.h
 tileset.c
+p_idle.h
+p_idle.c
 gfx.h

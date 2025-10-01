@@ -14,6 +14,10 @@ converts:
       tile-height: 16
       images:
         - tileset.png
+  - name: p_idle
+    palette: global_palette
+    images:
+      - p_idle.png
 
 outputs:
   - type: c
@@ -22,3 +26,4 @@ outputs:
       - global_palette
     converts:
       - tileset
+      - p_idle

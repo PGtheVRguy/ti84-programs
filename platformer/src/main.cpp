@@ -16,10 +16,10 @@ extern unsigned char tilemap_map[];
 #define TILE_WIDTH          16
 #define TILE_HEIGHT         16
 
-#define TILEMAP_WIDTH       58
-#define TILEMAP_HEIGHT      30
+#define TILEMAP_WIDTH       69 //the tilemap size itself
+#define TILEMAP_HEIGHT      16
 
-#define TILEMAP_DRAW_WIDTH  20
+#define TILEMAP_DRAW_WIDTH  20 //how much is drawn on screen
 #define TILEMAP_DRAW_HEIGHT 15
 
 #define Y_OFFSET            0
@@ -53,7 +53,7 @@ void drawTilemap(gfx_tilemap_t tm, int x, int y) {
     y = clamp(y, 0, ((  TILEMAP_HEIGHT*TILE_HEIGHT) - (SCREEN_HEIGHT) ) );
     x = clamp(x, 0, ((  TILEMAP_WIDTH*TILE_WIDTH) - (SCREEN_WIDTH) ) );
 
-    gfx_TransparentTilemap(&tm, x, y);
+    gfx_Tilemap(&tm, x, y);
 }
 
 
@@ -68,23 +68,67 @@ class Player {
 
         double hsp = 0;
         double vsp = 0;
-        void move_and_collide() {
-            x += hsp;
-        }
+        double grv = 0.5;
+        gfx_tilemap_t tm;
 
-};
+    bool isGrounded() {
+        if (*gfx_TilePtr(&tm, x,y+16) != 255) {
+            return true;
+        }
+        return false;
+    }
+
+
+    void move_and_collide() {
+            vsp += grv;
+            if (vsp > 5) {
+                vsp = 5;
+            }
+
+
+            if (isGrounded()) {
+                vsp = 0;
+            }
+            do {
+                y--;
+            } while (isGrounded());
+
+            x += hsp;
+            y += vsp;
+
+            gfx_PrintUInt(vsp, 3);
+
+
+
+            if (y > SCREEN_HEIGHT *2) {
+                y = -SCREEN_HEIGHT;
+            }
+
+
+
+        }
+        void draw_player(double _cx, double _cy) const {
+            gfx_TransparentSprite(p_idle, x, y);
+        }
+    };
+
+
+
+
+
 
 
 int main(void) {
 
     Player player;
-    int box_width = 30, box_height = 15; // Box dimensions
-    unsigned int cam_x = 0, cam_y = 0;
+
+    double cam_x = 0, cam_y = 0;
     // Initialize graphics
 
 
     gfx_tilemap_t tilemap;
 
+    player.tm = tilemap;
     /* Initialize the tilemap structure */
     tilemap.map         = tilemap_map;
     tilemap.tiles       = tileset_tiles;
@@ -116,7 +160,7 @@ int main(void) {
         gfx_FillScreen(1);
 
 
-        drawTilemap(tilemap, cam_x+player.x, cam_y);
+
 
         if (kb_Data[7] & kb_Right) {
             player.hsp = player.move_speed;
@@ -127,27 +171,15 @@ int main(void) {
         else {
             player.hsp = 0;
         }
-
-        //debug camera
-        /*if (kb_Data[7] & kb_Right) {
-            cam_x += 2;
-        }
-        if (kb_Data[7] & kb_Left) {
-            cam_x -= 2;
-        }*/
-        if (kb_Data[7] & kb_Up) {
-            cam_y -= 2;
-        }
-        if (kb_Data[7] & kb_Down) {
-            cam_y += 2;
-        }
         player.move_and_collide();
-        gfx_SetColor(31);
 
-        // Draw the box (player)
-        gfx_SetColor(255); // Box color (white)
-        gfx_FillRectangle(player.x, player.y, box_width, box_height);
+        //RENDERING CODE
 
+        cam_x = 0;// + SCREEN_WIDTH/2;
+        cam_y = 0;// + SCREEN_HEIGHT/2;
+
+        drawTilemap(tilemap, cam_x, cam_y);
+        player.draw_player(cam_x, cam_y);
 
         // Swap buffers to show the changes
         gfx_SwapDraw();

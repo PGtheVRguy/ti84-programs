@@ -9,11 +9,11 @@
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "11.tmx": {
-            "scale": 2,
+            "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 226.25,
-                "y": 176
+                "x": 538.5,
+                "y": 525
             }
         },
         "overworld.tsx": {
